@@ -7,6 +7,10 @@ android {
     namespace = "com.duymanh.audiorecorder"
     compileSdk = 34
 
+    viewBinding {
+        enable = true
+    }
+
     defaultConfig {
         applicationId = "com.duymanh.audiorecorder"
         minSdk = 28
