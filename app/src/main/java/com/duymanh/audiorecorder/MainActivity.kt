@@ -2,6 +2,7 @@ package com.duymanh.audiorecorder
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +16,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.room.Room
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -23,7 +25,11 @@ import com.duymanh.audiorecorder.databinding.BottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileOutputStream
+import java.io.ObjectOutputStream
 
 const val REQUEST_CODE = 200
 
@@ -45,8 +51,13 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
     private var isRecording = false
     private var isPaused = false
 
+    private var duration = ""
+
     private lateinit var vibrator: Vibrator
     private lateinit var timer: Timer
+
+
+    private lateinit var db: AppDatabase
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
@@ -69,6 +80,12 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
             ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE)
         }
 
+        db = Room.databaseBuilder(
+            this,
+            AppDatabase::class.java,
+            "audioRecords"
+        ).build()
+
 
         bottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.bottomSheet))
         bottomSheetBehavior.peekHeight = 0
@@ -85,8 +102,7 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
             vibrator.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
         }
         binding.btnList.setOnClickListener{
-            // TODO
-            Toast.makeText(this,"List button",Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, GalleryActivity::class.java))
         }
 
         binding.btnDone.setOnClickListener{
@@ -129,6 +145,25 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
         if(newFilename!=fileName){
             var newFile = File("$dirPath$newFilename.mp3")
             File("$dirPath$fileName.mp3").renameTo(newFile)
+        }
+
+        var filePath = "$dirPath$newFilename.mp3"
+        var timestamp: Long = Date().time
+        var ampsPath = "$dirPath$newFilename"
+
+        try {
+            var fos = FileOutputStream(ampsPath)
+            var out = ObjectOutputStream(fos)
+            out.writeObject(amplitudes)//ghi doi tuong amplitudes vao duong dan ampsPath
+            fos.close()
+            out.close()
+        }catch (e: IOException){
+            e.printStackTrace()
+        }
+        var record = AudioRecord(newFilename, filePath, timestamp,duration,ampsPath)
+
+        GlobalScope.launch {//thao tac bat dong bo
+            db.audioRecordDao().insert(record)
         }
     }
     private fun dismiss(){
@@ -235,6 +270,7 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
 
     override fun onTimerTick(duration: String) {
         binding.tvTimer.text = duration // Use binding
+        this.duration = duration.dropLast(3)
         binding.waveformView.addAmplitude(recorder.maxAmplitude.toFloat())
     }
 }
