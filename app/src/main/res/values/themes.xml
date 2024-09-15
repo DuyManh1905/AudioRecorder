@@ -2,6 +2,9 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.AudioRecorder" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Customize your light theme here. -->
+
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="android:textColor">@color/colorText</item>
         <item name="rippleColor">@color/grayDarkDisable</item>
@@ -11,6 +14,7 @@
     </style>
 
     <style name="Theme.AudioRecorder" parent="Base.Theme.AudioRecorder" />
+
     <style name="TextLayoutStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:layout_marginTop">20dp</item>
         <item name="android:layout_marginBottom">20dp</item>

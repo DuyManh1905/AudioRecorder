@@ -1,5 +1,6 @@
 package com.duymanh.audiorecorder
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -45,12 +46,18 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
             var queryResult = db.audioRecordDao().getAll()
             records.addAll(queryResult)
 
-            mAdapter.notifyDataSetChanged()
+            runOnUiThread {
+                mAdapter.notifyDataSetChanged()
+            }
         }
     }
 
     override fun onItemClickListener(position: Int) {
-        Toast.makeText(this,"Simple Click", Toast.LENGTH_SHORT).show()
+        var audioRecord = records[position]
+        var intent = Intent(this,AudioPlayerActivity::class.java)
+        intent.putExtra("filepath",audioRecord.filePath)
+        intent.putExtra("filename",audioRecord.fileName)
+        startActivity(intent)
     }
 
     override fun onItemLongClickListener(position: Int) {
