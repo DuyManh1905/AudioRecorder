@@ -9,14 +9,11 @@ import android.os.Looper
 import android.widget.ImageButton
 import android.widget.SeekBar
 import android.widget.TextView
-import android.widget.Toolbar
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.chip.Chip
 import java.text.DecimalFormat
 import java.text.NumberFormat
-import kotlin.math.log
-import kotlin.time.Duration
 
 class AudioPlayerActivity : AppCompatActivity() {
 
@@ -27,6 +24,8 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     private lateinit var tvTrackProgress: TextView
     private lateinit var tvTrackDuration: TextView
+
+    private lateinit var playerView: PlayerWaveformView
 
     private lateinit var btnPlay: ImageButton
     private lateinit var btnBackward: ImageButton
@@ -54,6 +53,7 @@ class AudioPlayerActivity : AppCompatActivity() {
 
         tvTrackProgress = findViewById(R.id.tvTrackProgress)
         tvTrackDuration = findViewById(R.id.tvTrackDuration)
+        playerView = findViewById(R.id.playerView)
 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
@@ -87,9 +87,9 @@ class AudioPlayerActivity : AppCompatActivity() {
 
 
         btnPlay.setOnClickListener{
-            playPausePlaer()
+            playPausePlayer()
         }
-        playPausePlaer()
+        playPausePlayer()
         seekBar.max = mediaPlayer.duration
         mediaPlayer.setOnCompletionListener {
             btnPlay.background = ResourcesCompat.getDrawable(resources, R.drawable.ic_play_circle,theme)
@@ -133,10 +133,21 @@ class AudioPlayerActivity : AppCompatActivity() {
 
     }
 
-    private fun playPausePlaer() {
+    private fun playPausePlayer() {
         if(!mediaPlayer.isPlaying){
             mediaPlayer.start()
             btnPlay.background = ResourcesCompat.getDrawable(resources, R.drawable.ic_pause_circle,theme)
+
+            runnable = Runnable {
+                var progress = mediaPlayer.currentPosition
+                seekBar.progress = progress
+
+                var amp = 80 + Math.random()*300
+                playerView.updateAmps(amp.toInt())
+
+                handler.postDelayed(runnable, 100)
+            }
+
             handler.postDelayed(runnable,delay)
         }
         else{
