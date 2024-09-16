@@ -22,4 +22,7 @@ interface AudioRecordDao {
 
     @Update
     fun update(audioRecord: AudioRecord)
+
+    @Query("SELECT * FROM audioRecords WHERE fileName LIKE :query")
+    fun searchDatabase(query: String):List<AudioRecord>
 }
