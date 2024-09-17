@@ -111,7 +111,7 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
 
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             binding.bottomSheetBG.visibility = View.VISIBLE
-            findViewById<TextInputEditText>(R.id.fileNameInput).setText(fileName)
+            findViewById<TextInputEditText>(R.id.filenameInput).setText(fileName)
         }
 
 
@@ -141,7 +141,7 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
     }
 
     private fun save(){
-        val newFilename = findViewById<TextInputEditText>(R.id.fileNameInput).text.toString()
+        val newFilename = findViewById<TextInputEditText>(R.id.filenameInput).text.toString()
         if(newFilename!=fileName){
             var newFile = File("$dirPath$newFilename.mp3")
             File("$dirPath$fileName.mp3").renameTo(newFile)
@@ -168,7 +168,7 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
     }
     private fun dismiss(){
         binding.bottomSheetBG.visibility = View.GONE
-        hideKeyboard(findViewById<TextInputEditText>(R.id.fileNameInput))
+        hideKeyboard(findViewById<TextInputEditText>(R.id.filenameInput))
 
         Handler(Looper.getMainLooper()).postDelayed({
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED

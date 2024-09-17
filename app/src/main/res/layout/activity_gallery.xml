@@ -11,6 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
+        android:elevation="0dp"
+        android:outlineAmbientShadowColor="@android:color/transparent"
+        android:outlineSpotShadowColor="@android:color/transparent"
         android:background="@android:color/transparent">
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_width="match_parent"
@@ -41,17 +44,18 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"/>
             </RelativeLayout>
-
         </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:hintEnabled="false"
-            style="@style/searchInputStyle">
+            style="@style/SearchInputStyle">
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/search_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/search_input"
                 android:hint="Search audio record"
                 android:inputType="text"
                 android:textColor="@color/colorText"
@@ -59,9 +63,8 @@
                 android:imeOptions="actionSearch"/>
         </com.google.android.material.textfield.TextInputLayout>
     </com.google.android.material.appbar.AppBarLayout>
-    
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
@@ -77,45 +80,45 @@
         android:padding="16dp"
         android:elevation="8dp"
         android:background="@color/white">
-            <LinearLayout
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginEnd="90dp">
+            <ImageButton
+                android:id="@+id/btnDelete"
+                android:clickable="false"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:layout_marginEnd="90dp">
-                    <ImageButton
-                        android:id="@+id/btnDelete"
-                        android:clickable="false"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:backgroundTint="@color/grayDarkDisable"
-                        android:background="@drawable/ic_bin_delete"/>
-                    <TextView
-                        android:id="@+id/tvDelete"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textColor="@color/grayDarkDisable"
-                        android:text="Delete"/>
-            </LinearLayout>
+                android:backgroundTint="@color/grayDarkDisable"
+                android:background="@drawable/ic_round_delete"/>
+            <TextView
+                android:id="@+id/tvDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/grayDarkDisable"
+                android:text="Delete"/>
+        </LinearLayout>
 
-            <LinearLayout
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center">
+            <ImageButton
+                android:id="@+id/btnEdit"
+                android:clickable="false"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center">
-                <ImageButton
-                    android:id="@+id/btnEdit"
-                    android:clickable="false"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:backgroundTint="@color/grayDarkDisable"
-                    android:background="@drawable/ic_edit"/>
-                <TextView
-                    android:id="@+id/tvEdit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/grayDarkDisable"
-                    android:text="Edit"/>
-            </LinearLayout>
+                android:backgroundTint="@color/grayDarkDisable"
+                android:background="@drawable/ic_round_edit"/>
+            <TextView
+                android:id="@+id/tvEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/grayDarkDisable"
+                android:text="Edit"/>
+        </LinearLayout>
     </LinearLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

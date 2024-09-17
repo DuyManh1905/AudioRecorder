@@ -3,9 +3,12 @@ package com.duymanh.audiorecorder
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -29,7 +32,7 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
     private lateinit var mAdapter: Adapter
     private lateinit var db: AppDatabase
 
-    private var allCheck = false
+    private var allChecked = false
 
     private lateinit var toolbar: MaterialToolbar
     private lateinit var editBar: View
@@ -45,6 +48,7 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
 
     private lateinit var tvRename: TextView
     private lateinit var tvDelete: TextView
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,9 +78,8 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
         bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
-
         records = ArrayList()
-        mAdapter = Adapter(records,this)
+
 
         db = Room.databaseBuilder(
             this,
@@ -84,102 +87,141 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
             "audioRecords"
         ).build()
 
-        binding.recyclerView.apply {
+        mAdapter = Adapter(records, this)
+
+        binding.recyclerview.apply {
             adapter = mAdapter
             layoutManager = LinearLayoutManager(context)
         }
         fetchAll()
 
         searchInput = findViewById(R.id.search_input)
-        searchInput.addTextChangedListener(object : TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+        searchInput.addTextChangedListener(object: TextWatcher{
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                var query = s.toString()
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                var query = p0.toString()
                 searchDatabase(query)
             }
 
-            override fun afterTextChanged(s: Editable?) {
+            override fun afterTextChanged(p0: Editable?) {
             }
+
         })
 
-        btnClose.setOnClickListener{
-            supportActionBar?.setDisplayHomeAsUpEnabled(true)
-            supportActionBar?.setDisplayShowHomeEnabled(true)
+        btnClose.setOnClickListener {
+            leaveEditMode()
+        }
 
-            editBar.visibility = View.GONE
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        btnSelectAll.setOnClickListener {
+            allChecked = !allChecked
+            records.map { it.isChecked = allChecked }
+            mAdapter.notifyDataSetChanged()
 
-            records.map {
-                it.isChecked = false
-                mAdapter.setEditMode(false)
+            if(allChecked){
+                disableRename()
+                enableDelete()
+            }else {
+                disableRename()
+                disableDelete()
             }
         }
 
-        btnSelectAll.setOnClickListener{
-            allCheck = !allCheck
-            records.map {
-                it.isChecked = allCheck
-                mAdapter.notifyDataSetChanged()
-
-                if(allCheck){
-                    disableRename()
-                    enableDelete()
-                }
-                else{
-                    disableRename()
-                    disableDelete()
-                }
-            }
-        }
-
-        btnDelete.setOnClickListener{
-            var builder = AlertDialog.Builder(this)
+        btnDelete.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
             builder.setTitle("Delete record?")
-            val nbRecords = records.count{
-                it.isChecked
-            }
+            val nbRecords = records.count{it.isChecked}
             builder.setMessage("Are you sure you want to delete $nbRecords record(s) ?")
-            builder.setPositiveButton("Delete"){_, _, ->
-                val toDelete = records.filter {
-                    it.isChecked
-                }.toTypedArray()
+
+            builder.setPositiveButton("Delete") {_, _ ->
+                val toDelete = records.filter { it.isChecked }.toTypedArray()
                 GlobalScope.launch {
                     db.audioRecordDao().delete(toDelete)
-
                     runOnUiThread {
                         records.removeAll(toDelete)
                         mAdapter.notifyDataSetChanged()
+                        leaveEditMode()
                     }
                 }
             }
 
-            builder.setNegativeButton("Cancel"){_, _, ->
-
+            builder.setNegativeButton("Cancel") {_, _ ->
+                // it does nothing
             }
+
+            val dialog = builder.create()
+            dialog.show()
+        }
+
+        btnRename.setOnClickListener {
+            val builder = AlertDialog.Builder(this)
+            val dialogView = this.layoutInflater.inflate(R.layout.rename_layout, null)
+            builder.setView(dialogView)
+            val dialog = builder.create()
+
+            val record = records.filter { it.isChecked }.get(0)
+            val textInput = dialogView.findViewById<TextInputEditText>(R.id.filenameInput)
+            textInput.setText(record.fileName)
+
+            dialogView.findViewById<Button>(R.id.btnSave).setOnClickListener {
+                val input = textInput.text.toString()
+                if(input.isEmpty()){
+                    Toast.makeText(this, "A name is required", Toast.LENGTH_LONG).show()
+                }else{
+                    record.fileName = input
+                    GlobalScope.launch {
+                        db.audioRecordDao().update(record)
+                        runOnUiThread {
+                            mAdapter.notifyItemChanged(records.indexOf(record))
+                            leaveEditMode()
+                            dialog.dismiss()
+                        }
+
+                    }
+                }
+            }
+
+            dialogView.findViewById<Button>(R.id.btnCancel).setOnClickListener {
+                dialog.dismiss()
+            }
+
+            dialog.show()
+
         }
     }
 
-    private fun disableRename (){
+
+    private fun leaveEditMode () {
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+
+        editBar.visibility = View.GONE
+
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
+        records.map { it.isChecked = false }
+        mAdapter.setEditMode(false)
+    }
+
+    private fun disableRename () {
         btnRename.isClickable = false
         btnRename.backgroundTintList = ResourcesCompat.getColorStateList(resources, R.color.grayDarkDisable, theme)
         tvRename.setTextColor(ResourcesCompat.getColorStateList(resources, R.color.grayDarkDisable, theme))
     }
-
-    private fun disableDelete (){
+    private fun disableDelete () {
         btnDelete.isClickable = false
         btnDelete.backgroundTintList = ResourcesCompat.getColorStateList(resources, R.color.grayDarkDisable, theme)
         tvDelete.setTextColor(ResourcesCompat.getColorStateList(resources, R.color.grayDarkDisable, theme))
     }
 
-    private fun enableRename (){
+    private fun enableRename () {
         btnRename.isClickable = true
         btnRename.backgroundTintList = ResourcesCompat.getColorStateList(resources, R.color.grayDark, theme)
         tvRename.setTextColor(ResourcesCompat.getColorStateList(resources, R.color.grayDark, theme))
     }
-
-    private fun enableDelete (){
+    private fun enableDelete () {
         btnDelete.isClickable = true
         btnDelete.backgroundTintList = ResourcesCompat.getColorStateList(resources, R.color.grayDark, theme)
         tvDelete.setTextColor(ResourcesCompat.getColorStateList(resources, R.color.grayDark, theme))
@@ -190,6 +232,7 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
             records.clear()
             var queryResult = db.audioRecordDao().searchDatabase("%$query%")
             records.addAll(queryResult)
+
             runOnUiThread {
                 mAdapter.notifyDataSetChanged()
             }
@@ -202,9 +245,7 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
             var queryResult = db.audioRecordDao().getAll()
             records.addAll(queryResult)
 
-            runOnUiThread {
-                mAdapter.notifyDataSetChanged()
-            }
+            mAdapter.notifyDataSetChanged()
         }
     }
 
@@ -215,9 +256,7 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
             records[position].isChecked = !records[position].isChecked
             mAdapter.notifyItemChanged(position)
 
-            var nbSelected = records.count{
-                it.isChecked
-            }
+            var nbSelected = records.count{it.isChecked}
             when(nbSelected){
                 0 -> {
                     disableRename()
@@ -232,11 +271,11 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
                     enableDelete()
                 }
             }
-        }
-        else{
-            var intent = Intent(this,AudioPlayerActivity::class.java)
-            intent.putExtra("filepath",audioRecord.filePath)
-            intent.putExtra("filename",audioRecord.fileName)
+        }else{
+            var intent = Intent(this, AudioPlayerActivity::class.java)
+
+            intent.putExtra("filepath", audioRecord.filePath)
+            intent.putExtra("filename", audioRecord.fileName)
             startActivity(intent)
         }
     }
