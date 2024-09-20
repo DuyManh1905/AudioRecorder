@@ -36,6 +36,8 @@ const val REQUEST_CODE = 200
 class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
 
     private lateinit var binding: ActivityMainBinding // View Binding object
+    private lateinit var binding2: BottomSheetBinding
+
     private lateinit var amplitudes: ArrayList<Float>
 
     private var permissions = arrayOf(
@@ -68,6 +70,8 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
+
+        binding2 = BottomSheetBinding.bind(binding.root.findViewById(R.id.bottomSheet))
 
         timer = Timer(this)
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
@@ -111,17 +115,17 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
 
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             binding.bottomSheetBG.visibility = View.VISIBLE
-            findViewById<TextInputEditText>(R.id.filenameInput).setText(fileName)
+            binding2.filenameInput.setText(fileName)
         }
 
 
 
-        findViewById<MaterialButton>(R.id.btnCancel).setOnClickListener{
+        binding2.btnCancel.setOnClickListener{
             File("$dirPath$fileName.mp3").delete()
             dismiss()
         }
 
-        findViewById<MaterialButton>(R.id.btnOk).setOnClickListener{
+        binding2.btnOk.setOnClickListener{
             dismiss()
             save()
         }
@@ -141,7 +145,7 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
     }
 
     private fun save(){
-        val newFilename = findViewById<TextInputEditText>(R.id.filenameInput).text.toString()
+        val newFilename = binding2.filenameInput.text.toString()
         if(newFilename!=fileName){
             var newFile = File("$dirPath$newFilename.mp3")
             File("$dirPath$fileName.mp3").renameTo(newFile)
@@ -168,7 +172,7 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
     }
     private fun dismiss(){
         binding.bottomSheetBG.visibility = View.GONE
-        hideKeyboard(findViewById<TextInputEditText>(R.id.filenameInput))
+        hideKeyboard(binding2.filenameInput)
 
         Handler(Looper.getMainLooper()).postDelayed({
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED

@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.room.Room
@@ -145,11 +146,9 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
                     }
                 }
             }
-
             builder.setNegativeButton("Cancel") {_, _ ->
                 // it does nothing
             }
-
             val dialog = builder.create()
             dialog.show()
         }
@@ -181,13 +180,10 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
                     }
                 }
             }
-
             dialogView.findViewById<Button>(R.id.btnCancel).setOnClickListener {
                 dialog.dismiss()
             }
-
             dialog.show()
-
         }
     }
 
@@ -195,9 +191,7 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
     private fun leaveEditMode () {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
-
         editBar.visibility = View.GONE
-
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
@@ -218,13 +212,13 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
 
     private fun enableRename () {
         btnRename.isClickable = true
-        btnRename.backgroundTintList = ResourcesCompat.getColorStateList(resources, R.color.grayDark, theme)
-        tvRename.setTextColor(ResourcesCompat.getColorStateList(resources, R.color.grayDark, theme))
+        btnRename.backgroundTintList = ResourcesCompat.getColorStateList(resources, R.color.playerColor, theme)
+        tvRename.setTextColor(ResourcesCompat.getColorStateList(resources, R.color.playerColor, theme))
     }
     private fun enableDelete () {
         btnDelete.isClickable = true
-        btnDelete.backgroundTintList = ResourcesCompat.getColorStateList(resources, R.color.grayDark, theme)
-        tvDelete.setTextColor(ResourcesCompat.getColorStateList(resources, R.color.grayDark, theme))
+        btnDelete.backgroundTintList = ResourcesCompat.getColorStateList(resources, R.color.playerColor, theme)
+        tvDelete.setTextColor(ResourcesCompat.getColorStateList(resources, R.color.playerColor, theme))
     }
 
     private fun searchDatabase(query: String) {
@@ -232,7 +226,6 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
             records.clear()
             var queryResult = db.audioRecordDao().searchDatabase("%$query%")
             records.addAll(queryResult)
-
             runOnUiThread {
                 mAdapter.notifyDataSetChanged()
             }
@@ -244,7 +237,6 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
             records.clear()
             var queryResult = db.audioRecordDao().getAll()
             records.addAll(queryResult)
-
             mAdapter.notifyDataSetChanged()
         }
     }
@@ -273,24 +265,23 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
             }
         }else{
             var intent = Intent(this, AudioPlayerActivity::class.java)
-
             intent.putExtra("filepath", audioRecord.filePath)
             intent.putExtra("filename", audioRecord.fileName)
             startActivity(intent)
         }
     }
 
+
+
     override fun onItemLongClickListener(position: Int) {
         mAdapter.setEditMode(true)
         records[position].isChecked = !records[position].isChecked
         mAdapter.notifyItemChanged(position)
-
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
 
         if(mAdapter.isEditMode() && editBar.visibility == View.GONE){
             supportActionBar?.setDisplayHomeAsUpEnabled(false)
             supportActionBar?.setDisplayShowHomeEnabled(false)
-
             editBar.visibility = View.VISIBLE
 
             enableDelete()

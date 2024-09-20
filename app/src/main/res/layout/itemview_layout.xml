@@ -11,6 +11,8 @@
     android:orientation="horizontal">
     
     <ImageButton
+        android:id="@+id/ic_play"
+        android:backgroundTint="@color/gray"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:clickable="false"
