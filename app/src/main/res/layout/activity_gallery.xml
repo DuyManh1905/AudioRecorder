@@ -70,25 +70,28 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
     <LinearLayout
+        android:clickable="true"
+        android:focusable="true"
+        android:weightSum="2"
         android:id="@+id/bottomSheet"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         app:behavior_hideable="true"
         android:orientation="horizontal"
         android:gravity="center"
-        android:padding="16dp"
         android:elevation="8dp"
         android:background="@color/white">
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:id="@+id/itemDelete"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:gravity="center"
-            android:layout_marginEnd="90dp">
+            android:gravity="center">
             <ImageButton
                 android:id="@+id/btnDelete"
-                android:clickable="false"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/grayDarkDisable"
@@ -102,13 +105,15 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/itemRename"
+            android:clickable="false"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical"
             android:gravity="center">
             <ImageButton
                 android:id="@+id/btnEdit"
-                android:clickable="false"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/grayDarkDisable"

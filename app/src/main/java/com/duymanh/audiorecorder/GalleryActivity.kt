@@ -44,8 +44,8 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
     private lateinit var bottomSheet: LinearLayout
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
 
-    private lateinit var btnRename: ImageButton
     private lateinit var btnDelete: ImageButton
+    private lateinit var btnRename: ImageButton
 
     private lateinit var tvRename: TextView
     private lateinit var tvDelete: TextView
@@ -68,6 +68,8 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
 
         btnRename = findViewById(R.id.btnEdit)
         btnDelete = findViewById(R.id.btnDelete)
+
+
         tvRename = findViewById(R.id.tvEdit)
         tvDelete = findViewById(R.id.tvDelete)
 
@@ -194,6 +196,7 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
         editBar.visibility = View.GONE
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheet.visibility = View.GONE
 
         records.map { it.isChecked = false }
         mAdapter.setEditMode(false)
@@ -277,6 +280,7 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
         mAdapter.setEditMode(true)
         records[position].isChecked = !records[position].isChecked
         mAdapter.notifyItemChanged(position)
+        bottomSheet.visibility = View.VISIBLE
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
 
         if(mAdapter.isEditMode() && editBar.visibility == View.GONE){
