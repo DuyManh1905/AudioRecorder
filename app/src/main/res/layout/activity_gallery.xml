@@ -62,12 +62,29 @@
                 android:textColorHint="@color/grayDark"
                 android:imeOptions="actionSearch"/>
         </com.google.android.material.textfield.TextInputLayout>
+        <Spinner
+            android:id="@+id/spinner_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="18dp"/>
     </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+    <TextView
+        android:id="@+id/noItem"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Not found item"
+        android:gravity="center"
+        android:textSize="30dp"
+        android:layout_gravity="center"
+        android:visibility="gone"/> <!-- Set visibility to gone by default -->
 
     <LinearLayout
         android:clickable="true"

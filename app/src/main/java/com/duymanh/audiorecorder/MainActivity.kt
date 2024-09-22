@@ -13,6 +13,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -130,6 +131,11 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
             save()
         }
 
+        var categories = resources.getStringArray(R.array.category)
+        var spinnerAdapter = ArrayAdapter(this,R.layout.item_spinner, categories)
+        spinnerAdapter.setDropDownViewResource(R.layout.item_spinner)
+        binding2.categorySpinner.adapter = spinnerAdapter
+
         binding.bottomSheetBG.setOnClickListener{
             File("$dirPath$fileName.mp3").delete()
             dismiss()
@@ -164,7 +170,8 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
         }catch (e: IOException){
             e.printStackTrace()
         }
-        var record = AudioRecord(newFilename, filePath, timestamp,duration,ampsPath)
+        var category = binding2.categorySpinner.selectedItem.toString()
+        var record = AudioRecord(newFilename, filePath, timestamp,duration,ampsPath,category)
 
         GlobalScope.launch {//thao tac bat dong bo
             db.audioRecordDao().insert(record)

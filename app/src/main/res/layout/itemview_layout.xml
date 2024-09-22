@@ -39,6 +39,14 @@
             android:layout_height="wrap_content"
             android:textSize="14sp"
             android:text="Example"/>
+
+        <TextView
+            android:id="@+id/tvCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/playerColor"
+            android:textStyle="italic"
+            android:text="Category1"/>
     </LinearLayout>
 
     <CheckBox

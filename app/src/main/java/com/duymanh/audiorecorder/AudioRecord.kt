@@ -11,7 +11,8 @@ data class AudioRecord (
     var filePath: String,//duong dan den tep
     var timestamp: Long,//thoi gian luu
     var duration: String,//do dai
-    var ampsPath: String//luu tru du lieu dang song
+    var ampsPath: String,//luu tru du lieu dang song
+    var category: String
 ){
     @PrimaryKey(autoGenerate = true)
     var id = 0

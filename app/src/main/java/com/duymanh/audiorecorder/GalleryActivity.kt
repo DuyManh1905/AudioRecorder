@@ -8,9 +8,12 @@ import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -40,6 +43,8 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
     private lateinit var btnClose: ImageButton
     private lateinit var btnSelectAll: ImageButton
 
+    private lateinit var spinner_category: Spinner
+    private lateinit var categories: Array<String>
     private lateinit var searchInput: TextInputEditText
     private lateinit var bottomSheet: LinearLayout
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<LinearLayout>
@@ -112,6 +117,24 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
             }
 
         })
+
+        spinner_category = findViewById(R.id.spinner_category)
+        categories = arrayOf("All") + resources.getStringArray(R.array.category)
+        val adapter = ArrayAdapter(this,R.layout.item_spinner,categories)
+        adapter.setDropDownViewResource(R.layout.item_spinner)
+        spinner_category.adapter = adapter
+
+        spinner_category.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedCategory = categories[position]
+                filterDatabaseByCategory(selectedCategory)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Do nothing
+            }
+        }
+
 
         btnClose.setOnClickListener {
             leaveEditMode()
@@ -231,6 +254,24 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
             records.addAll(queryResult)
             runOnUiThread {
                 mAdapter.notifyDataSetChanged()
+                checkNoItem()
+            }
+        }
+    }
+
+    private fun filterDatabaseByCategory(query: String){
+        GlobalScope.launch {
+            records.clear()
+            var queryResult = if(query == "All"){
+                db.audioRecordDao().getAll()
+            }
+            else{
+                db.audioRecordDao().searchByCategory(query)
+            }
+            records.addAll(queryResult)
+            runOnUiThread {
+                mAdapter.notifyDataSetChanged()
+                checkNoItem()
             }
         }
     }
@@ -240,7 +281,20 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
             records.clear()
             var queryResult = db.audioRecordDao().getAll()
             records.addAll(queryResult)
-            mAdapter.notifyDataSetChanged()
+            runOnUiThread {
+                mAdapter.notifyDataSetChanged()
+                checkNoItem()
+            }
+        }
+    }
+
+    private fun checkNoItem() {
+        if (records.isEmpty()) {
+            binding.noItem.visibility = View.VISIBLE
+            binding.recyclerview.visibility = View.GONE
+        } else {
+            binding.noItem.visibility = View.GONE
+            binding.recyclerview.visibility = View.VISIBLE
         }
     }
 

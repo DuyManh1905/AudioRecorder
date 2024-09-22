@@ -25,6 +25,7 @@ class Adapter(var records : ArrayList<AudioRecord>, var listener: OnItemClickLis
         var tvFilename : TextView = itemView.findViewById(R.id.tvFilename)
         var tvMeta : TextView = itemView.findViewById(R.id.tvMeta)
         var checkbox : CheckBox = itemView.findViewById(R.id.checkbox)
+        var tvCategory : TextView = itemView.findViewById(R.id.tvCategory)
 
         init {
             itemView.setOnClickListener(this)
@@ -63,6 +64,7 @@ class Adapter(var records : ArrayList<AudioRecord>, var listener: OnItemClickLis
 
             holder.tvFilename.text = record.fileName
             holder.tvMeta.text = "${record.duration } $strDate"
+            holder.tvCategory.text = record.category
 
             if(editMode){
                 holder.checkbox.visibility = View.VISIBLE
