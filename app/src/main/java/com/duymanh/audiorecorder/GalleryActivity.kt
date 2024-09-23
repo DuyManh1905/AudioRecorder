@@ -188,12 +188,21 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
             val textInput = dialogView.findViewById<TextInputEditText>(R.id.filenameInput)
             textInput.setText(record.fileName)
 
+            //set cho spinner
+            val cate = categories.drop(1)
+            val adapter = ArrayAdapter(this,R.layout.item_spinner,cate)
+            adapter.setDropDownViewResource(R.layout.item_spinner)
+            dialogView.findViewById<Spinner>(R.id.categorySpinner).adapter = adapter
+
             dialogView.findViewById<Button>(R.id.btnSave).setOnClickListener {
                 val input = textInput.text.toString()
+                val category = dialogView.findViewById<Spinner>(R.id.categorySpinner).selectedItem.toString()
+
                 if(input.isEmpty()){
                     Toast.makeText(this, "A name is required", Toast.LENGTH_LONG).show()
                 }else{
                     record.fileName = input
+                    record.category = category
                     GlobalScope.launch {
                         db.audioRecordDao().update(record)
                         runOnUiThread {
