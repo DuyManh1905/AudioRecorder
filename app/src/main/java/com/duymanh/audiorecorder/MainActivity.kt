@@ -26,7 +26,10 @@ import com.duymanh.audiorecorder.databinding.BottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -110,13 +113,22 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
             startActivity(Intent(this, GalleryActivity::class.java))
         }
 
+
         binding.btnDone.setOnClickListener{
             stopRecorder()
-            Toast.makeText(this,"Record saved",Toast.LENGTH_SHORT).show()
+            binding.progressBar.visibility = View.VISIBLE
+            binding.progressText.visibility = View.VISIBLE
 
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            binding.bottomSheetBG.visibility = View.VISIBLE
-            binding2.filenameInput.setText(fileName)
+            CoroutineScope(Dispatchers.Main).launch {
+                classification()
+
+                binding.progressBar.visibility = View.GONE
+                binding.progressText.visibility = View.GONE
+                Toast.makeText(this@MainActivity, "Record saved", Toast.LENGTH_SHORT).show()
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+                binding.bottomSheetBG.visibility = View.VISIBLE
+                binding2.filenameInput.setText(fileName)
+            }
         }
 
 
@@ -148,6 +160,10 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
         }
 
         binding.btnDelete.isClickable = false;
+    }
+
+    private suspend fun classification() {
+        delay(3000)
     }
 
     private fun save(){

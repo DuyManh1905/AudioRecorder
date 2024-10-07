@@ -45,6 +45,7 @@
                 android:background="@drawable/ic_ripple"
                 android:layout_height="56dp"/>
 
+
             <ImageButton
                 android:id="@+id/btnRecord"
                 android:layout_width="66dp"
@@ -69,6 +70,29 @@
                 android:layout_height="56dp"/>
 
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="72dp"
+            android:layout_height="97dp"
+            app:layout_constraintBottom_toBottomOf="@+id/waveformView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/waveformView"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/progressText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Recognizing sound..."
+            android:textColor="@android:color/black"
+            android:textSize="30sp"
+            android:textStyle="italic|bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/progressBar"
+            android:visibility="gone"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
