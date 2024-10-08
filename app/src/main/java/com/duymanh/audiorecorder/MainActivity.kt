@@ -11,6 +11,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
@@ -18,6 +19,8 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.room.Room
+import com.chaquo.python.Python
+import com.chaquo.python.android.AndroidPlatform
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -34,6 +37,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.ObjectOutputStream
+import kotlin.random.Random
 
 const val REQUEST_CODE = 200
 
@@ -69,6 +73,19 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //Khoi tao pluggin Python
+
+        if (! Python.isStarted()) {
+            Python.start(AndroidPlatform(this))
+        }
+        // Lấy instance của Python
+        val py = Python.getInstance()
+        // Gọi hàm Python
+        val pyObject = py.getModule("hello").callAttr("say_hello")
+        // In kết quả lên log hoặc TextView
+        Log.d("Chaquopy", pyObject.toString())
+
 
         // Initialize the View Binding
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -120,11 +137,14 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
             binding.progressText.visibility = View.VISIBLE
 
             CoroutineScope(Dispatchers.Main).launch {
-                classification()
+                var categoryInd = classification()
+                if (categoryInd >= 0) {
+                    binding2.categorySpinner.setSelection(categoryInd)  // Thiết lập giá trị mặc định
+                }
 
                 binding.progressBar.visibility = View.GONE
                 binding.progressText.visibility = View.GONE
-                Toast.makeText(this@MainActivity, "Record saved", Toast.LENGTH_SHORT).show()
+
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
                 binding.bottomSheetBG.visibility = View.VISIBLE
                 binding2.filenameInput.setText(fileName)
@@ -139,6 +159,7 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
         }
 
         binding2.btnOk.setOnClickListener{
+            Toast.makeText(this@MainActivity, "Record saved", Toast.LENGTH_SHORT).show()
             dismiss()
             save()
         }
@@ -162,8 +183,15 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
         binding.btnDelete.isClickable = false;
     }
 
-    private suspend fun classification() {
-        delay(3000)
+    private suspend fun classification(): Int {
+        var py = Python.getInstance()
+
+        val pyModule = py.getModule("audio_classifier")
+
+        val randomIndex = pyModule.callAttr("classify",fileName).toInt()
+
+//        delay(3000)
+        return  randomIndex;
     }
 
     private fun save(){

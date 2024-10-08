@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
+    id("com.chaquo.python")
 }
 
 
@@ -21,6 +22,18 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            // On Apple silicon, you can omit x86_64.
+            abiFilters  += listOf("arm64-v8a", "x86_64")
+        }
+
+//        sourceSets["main"].python.srcDir("src/main/python")
+    }
+
+    flavorDimensions += "pyVersion"
+    productFlavors {
+        create("py38") { dimension = "pyVersion" }
+        create("py39") { dimension = "pyVersion" }
     }
 
     buildTypes {
@@ -38,6 +51,31 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+}
+
+chaquopy {
+    defaultConfig {
+        pyc {
+            src = false
+        }
+        pip {
+            install ("scipy")
+            install ("soundfile")
+            install ("librosa==0.9.2")
+            install ("resampy==0.3.1")
+        }
+    }
+    sourceSets {
+        sourceSets {
+            getByName("main") {
+                srcDir("src/main/python")
+            }
+        }
+    }
+    productFlavors {
+        getByName("py38") { version = "3.8" }
     }
 }
 

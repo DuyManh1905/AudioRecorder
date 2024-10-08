@@ -191,8 +191,13 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
             //set cho spinner
             val cate = categories.drop(1)
             val adapter = ArrayAdapter(this,R.layout.item_spinner,cate)
-            adapter.setDropDownViewResource(R.layout.item_spinner)
-            dialogView.findViewById<Spinner>(R.id.categorySpinner).adapter = adapter
+            val spinner = dialogView.findViewById<Spinner>(R.id.categorySpinner)
+            spinner.adapter = adapter
+
+            val selectedIndex = cate.indexOf(record.category)
+            if (selectedIndex >= 0) {
+                spinner.setSelection(selectedIndex)  // Thiết lập giá trị mặc định
+            }
 
             dialogView.findViewById<Button>(R.id.btnSave).setOnClickListener {
                 val input = textInput.text.toString()
