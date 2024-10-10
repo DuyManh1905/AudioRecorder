@@ -147,7 +147,8 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
 
 
         binding2.btnCancel.setOnClickListener{
-            File("$dirPath$fileName.mp3").delete()
+//            uuuuuuuuuuuu
+            File("$dirPath$fileName.wav").delete()
             dismiss()
         }
 
@@ -163,13 +164,14 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
         binding2.categorySpinner.adapter = spinnerAdapter
 
         binding.bottomSheetBG.setOnClickListener{
-            File("$dirPath$fileName.mp3").delete()
+            File("$dirPath$fileName.wav").delete()
             dismiss()
         }
 
         binding.btnDelete.setOnClickListener{
             stopRecorder()
-            File("$dirPath$fileName.mp3").delete()
+            //            uuuuuuuuuuuu
+            File("$dirPath$fileName.wav").delete()
             Toast.makeText(this,"Record delete",Toast.LENGTH_SHORT).show()
         }
 
@@ -177,29 +179,22 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
     }
 
     private suspend fun classification(): Int {
-
-        var py = Python.getInstance()
-        val filePath = "$dirPath$fileName.mp3"
-
-
-//        val pyModule = py.getModule("audio_processing")
-//        val result = pyModule.callAttr("predict_audio_file", filePath)
-//        val spectrogram = result.toJava(FloatArray::class.java)
-//        for (i in spectrogram.indices) {
-//            Log.d("SpectrogramLog", "Value $i: ${spectrogram[i]}")
-//        }
-
-        return 2;
+        val modelClassifier = InstrumentClassifier(this)
+        println("goi ham Ins thanh cong")
+        val classifiedCategoryId = intArrayOf(-1)
+        classifiedCategoryId[0] = modelClassifier.inference("$dirPath$fileName.wav")
+        return classifiedCategoryId[0].toInt()
     }
 
     private fun save(){
         val newFilename = binding2.filenameInput.text.toString()
         if(newFilename!=fileName){
-            var newFile = File("$dirPath$newFilename.mp3")
-            File("$dirPath$fileName.mp3").renameTo(newFile)
+            //            uuuuuuuuuuuu
+            var newFile = File("$dirPath$newFilename.wav")
+            File("$dirPath$fileName.wav").renameTo(newFile)
         }
 
-        var filePath = "$dirPath$newFilename.mp3"
+        var filePath = "$dirPath$newFilename.wav"
         var timestamp: Long = Date().time
         var ampsPath = "$dirPath$newFilename"
 
@@ -274,10 +269,12 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
         fileName = "audio_record_$date"
 
         recorder.apply {
+            setAudioChannels(1)
+            setAudioSamplingRate(22050)
             setAudioSource(MediaRecorder.AudioSource.MIC)
-            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
             setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-            setOutputFile("$dirPath$fileName.mp3")
+            setOutputFile("$dirPath$fileName.wav")
 
             try {
                 prepare()
@@ -327,30 +324,4 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
         binding.waveformView.addAmplitude(recorder.maxAmplitude.toFloat())
     }
 
-    fun loadOnnxModel(context: Context) {
-        // Khởi tạo môi trường ONNX
-        val env = OrtEnvironment.getEnvironment()
-        var session: OrtSession? = null
-        try {
-            // Đọc model từ thư mục assets
-            val assetManager = context.assets
-            val modelInputStream = assetManager.open("converted_model.onnx")
-            val modelBytes = modelInputStream.readBytes()
-            modelInputStream.close()
-
-            // Tạo session với model
-            session = env.createSession(modelBytes)
-
-            // In ra "success" nếu tạo session thành công
-            Log.d("ONNX", "Success")
-
-        } catch (e: Exception) {
-            // Xử lý lỗi nếu có vấn đề trong việc tải model
-            Log.d("ONNX", "Khong load duoc model")
-            e.printStackTrace()
-        } finally {
-            session?.close()
-            env.close()
-        }
-    }
 }
