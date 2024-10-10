@@ -24,10 +24,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk {
             // On Apple silicon, you can omit x86_64.
-            abiFilters  += listOf("arm64-v8a", "x86_64")
+            abiFilters  += listOf("arm64-v8a", "x86_64","armeabi-v7a")
         }
-
-//        sourceSets["main"].python.srcDir("src/main/python")
     }
 
     flavorDimensions += "pyVersion"
@@ -92,4 +90,6 @@ dependencies {
     implementation("androidx.room:room-runtime:2.5.2")
     kapt("androidx.room:room-compiler:2.5.2")
     implementation("androidx.room:room-ktx:2.5.2")
+//    implementation ("com.microsoft.onnxruntime:onnxruntime:1.9.0")\
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.15.0")
 }

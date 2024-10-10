@@ -1,5 +1,7 @@
 package com.duymanh.audiorecorder
 
+import ai.onnxruntime.OrtEnvironment
+import ai.onnxruntime.OrtSession
 import android.Manifest
 import android.content.Context
 import android.content.Intent
@@ -27,17 +29,15 @@ import java.util.Date
 import com.duymanh.audiorecorder.databinding.ActivityMainBinding
 import com.duymanh.audiorecorder.databinding.BottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.textfield.TextInputEditText
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
+
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.ObjectOutputStream
-import kotlin.random.Random
 
 const val REQUEST_CODE = 200
 
@@ -79,13 +79,6 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
         if (! Python.isStarted()) {
             Python.start(AndroidPlatform(this))
         }
-        // Lấy instance của Python
-        val py = Python.getInstance()
-        // Gọi hàm Python
-        val pyObject = py.getModule("hello").callAttr("say_hello")
-        // In kết quả lên log hoặc TextView
-        Log.d("Chaquopy", pyObject.toString())
-
 
         // Initialize the View Binding
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -184,14 +177,19 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
     }
 
     private suspend fun classification(): Int {
+
         var py = Python.getInstance()
+        val filePath = "$dirPath$fileName.mp3"
 
-        val pyModule = py.getModule("audio_classifier")
 
-        val randomIndex = pyModule.callAttr("classify",fileName).toInt()
+//        val pyModule = py.getModule("audio_processing")
+//        val result = pyModule.callAttr("predict_audio_file", filePath)
+//        val spectrogram = result.toJava(FloatArray::class.java)
+//        for (i in spectrogram.indices) {
+//            Log.d("SpectrogramLog", "Value $i: ${spectrogram[i]}")
+//        }
 
-//        delay(3000)
-        return  randomIndex;
+        return 2;
     }
 
     private fun save(){
@@ -327,5 +325,32 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
         binding.tvTimer.text = duration // Use binding
         this.duration = duration.dropLast(3)
         binding.waveformView.addAmplitude(recorder.maxAmplitude.toFloat())
+    }
+
+    fun loadOnnxModel(context: Context) {
+        // Khởi tạo môi trường ONNX
+        val env = OrtEnvironment.getEnvironment()
+        var session: OrtSession? = null
+        try {
+            // Đọc model từ thư mục assets
+            val assetManager = context.assets
+            val modelInputStream = assetManager.open("converted_model.onnx")
+            val modelBytes = modelInputStream.readBytes()
+            modelInputStream.close()
+
+            // Tạo session với model
+            session = env.createSession(modelBytes)
+
+            // In ra "success" nếu tạo session thành công
+            Log.d("ONNX", "Success")
+
+        } catch (e: Exception) {
+            // Xử lý lỗi nếu có vấn đề trong việc tải model
+            Log.d("ONNX", "Khong load duoc model")
+            e.printStackTrace()
+        } finally {
+            session?.close()
+            env.close()
+        }
     }
 }

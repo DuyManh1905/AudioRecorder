@@ -2,10 +2,10 @@
     <string name="app_name">Audio recorder</string>
 
     <string-array name="category">
-        <item>None</item>
-        <item>Category1</item>
-        <item>Category2</item>
-        <item>Category3</item>
+        <item>Piano</item>
+        <item>Guitar</item>
+        <item>Dan bau</item>
+        <item>Dan tranh</item>
     </string-array>
 
 </resources>
