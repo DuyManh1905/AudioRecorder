@@ -94,4 +94,5 @@ dependencies {
     implementation("com.microsoft.onnxruntime:onnxruntime-android:1.15.0")
 
     implementation("com.arthenica:ffmpeg-kit-full:6.0-2")
+
 }

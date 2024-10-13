@@ -1,43 +1,38 @@
 package com.duymanh.audiorecorder
 
-import ai.onnxruntime.OrtEnvironment
-import ai.onnxruntime.OrtSession
 import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.room.Room
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.Date
 import com.duymanh.audiorecorder.databinding.ActivityMainBinding
 import com.duymanh.audiorecorder.databinding.BottomSheetBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import java.io.ObjectOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
 
 const val REQUEST_CODE = 200
 
@@ -159,7 +154,6 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
 
 
         binding2.btnCancel.setOnClickListener{
-//            uuuuuuuuuuuu
             File("$dirPath$fileName.wav").delete()
             dismiss()
         }
@@ -191,11 +185,8 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
 
     private suspend fun classification(): Int {
         val modelClassifier = InstrumentClassifier(this)
-        println("goi ham Ins thanh cong")
         var classifiedCategoryId = 0
-
         classifiedCategoryId = modelClassifier.inference("$dirPath$fileName.wav")
-
         return classifiedCategoryId
     }
 

@@ -17,10 +17,10 @@
         android:background="@android:color/transparent">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:background="#46FFEB3B"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
+            android:layout_height="110dp"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
-
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
@@ -69,23 +69,24 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Spinner
+            android:layout_marginStart="20dp"
+            android:background="@drawable/spinner_border"
             android:id="@+id/spinner_category"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="18dp"/>
+            android:layout_marginBottom="5dp"/>
 
-        <TextView
+        <View
+            android:layout_marginTop="15dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textColor="@color/playerColor"
-            android:textSize="30sp"
-            android:text="List Records"
-            android:paddingBottom="20dp"/>
+            android:layout_height="3dp"
+            android:background="@color/colorText" />
     </com.google.android.material.appbar.AppBarLayout>
 
 
 
     <androidx.recyclerview.widget.RecyclerView
+        android:background="@color/white"
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

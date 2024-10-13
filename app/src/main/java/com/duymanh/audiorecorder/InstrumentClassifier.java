@@ -42,16 +42,6 @@ public class InstrumentClassifier {
         }
     }
 
-//    private byte[] readModel() throws IOException {
-//        InputStream inputStream =  context.getAssets().open("converted_model_2.onnx");
-//        System.out.println("Load model thanh cong");
-//        int size = inputStream.available();
-//        byte [] buffer = new byte[size];
-//        inputStream.read(buffer);
-//        inputStream.close();
-//        return buffer;
-//    }
-
     private byte[] readModel() throws IOException {
         try (InputStream inputStream = context.getAssets().open("converted_model_final.onnx");
              ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
