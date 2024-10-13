@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@drawable/my_gradient">
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -16,12 +18,12 @@
             android:id="@+id/tvTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
             android:text="00:00.00"
             android:textSize="56sp"
             app:layout_constraintBottom_toTopOf="@+id/waveformView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginBottom="30dp"/>
+            app:layout_constraintStart_toStartOf="parent" />
 
         <com.duymanh.audiorecorder.WaveformView
             android:id="@+id/waveformView"
@@ -30,78 +32,81 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+
         <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="80dp"
             android:gravity="center"
             android:orientation="horizontal"
-            android:layout_marginBottom="80dp"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <ImageButton
                 android:id="@+id/btnDelete"
                 android:layout_width="56dp"
-                android:src="@drawable/ic_delete_disabled"
+                android:layout_height="56dp"
                 android:background="@drawable/ic_ripple"
-                android:layout_height="56dp"/>
-
+                android:src="@drawable/ic_delete_disable" />
 
             <ImageButton
                 android:id="@+id/btnRecord"
                 android:layout_width="66dp"
-                android:background="@drawable/ic_record"
+                android:layout_height="66dp"
                 android:layout_marginStart="30dp"
                 android:layout_marginEnd="30dp"
-                android:layout_height="66dp"/>
+                android:background="@drawable/ic_ripple"
+                android:padding="4dp"
+                android:src="@drawable/ic_record" />
 
             <ImageButton
                 android:id="@+id/btnList"
                 android:layout_width="56dp"
-                android:src="@drawable/ic_list"
+                android:layout_height="56dp"
                 android:background="@drawable/ic_ripple"
-                android:layout_height="56dp"/>
+                android:src="@drawable/ic_list" />
 
             <ImageButton
                 android:id="@+id/btnDone"
-                android:visibility="gone"
                 android:layout_width="56dp"
-                android:src="@drawable/ic_done"
+                android:layout_height="56dp"
                 android:background="@drawable/ic_ripple"
-                android:layout_height="56dp"/>
-
+                android:src="@drawable/ic_done"
+                android:visibility="gone" />
         </LinearLayout>
 
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="72dp"
             android:layout_height="97dp"
-            app:layout_constraintBottom_toBottomOf="@+id/waveformView"
+            app:layout_constraintBottom_toBottomOf="@id/waveformView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/waveformView"
+            app:layout_constraintStart_toStartOf="parent"
             android:visibility="gone"/>
-
         <TextView
             android:id="@+id/progressText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Recognizing sound..."
-            android:textColor="@android:color/black"
-            android:textSize="30sp"
-            android:textStyle="italic|bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/progressBar"
-            android:visibility="gone"/>
+            android:layout_marginTop="80dp"
+            android:text="Recognizing sound..."
+            android:textSize="30sp"
+            android:textColor="@color/playerColor"
+            android:visibility="gone"
+            android:textStyle="bold|italic"/>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:id="@+id/bottomSheetBG"
         android:layout_width="match_parent"
-        android:visibility="gone"
         android:layout_height="match_parent"
+        android:visibility="gone"
         android:background="@color/opaqueBG"/>
 
     <include layout="@layout/bottom_sheet"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

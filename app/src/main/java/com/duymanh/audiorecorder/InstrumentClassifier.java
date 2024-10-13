@@ -9,6 +9,7 @@ import com.arthenica.ffmpegkit.FFmpegKit;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +27,7 @@ import ai.onnxruntime.OrtSession;
 public class InstrumentClassifier {
 
     public static final String[] labels = new String[]{"Piano","Guitar","Dan Bau","Dan tranh"};
-    int [] inputShapes = new int[]{427,13};
+    int [] inputShapes = new int[]{431,13};
     private OrtEnvironment ortEnvironment = OrtEnvironment.getEnvironment();
     private OrtSession ortSession;
     private Context context;
@@ -41,15 +42,36 @@ public class InstrumentClassifier {
         }
     }
 
+//    private byte[] readModel() throws IOException {
+//        InputStream inputStream =  context.getAssets().open("converted_model_2.onnx");
+//        System.out.println("Load model thanh cong");
+//        int size = inputStream.available();
+//        byte [] buffer = new byte[size];
+//        inputStream.read(buffer);
+//        inputStream.close();
+//        return buffer;
+//    }
+
     private byte[] readModel() throws IOException {
-        InputStream inputStream =  context.getAssets().open("converted_model_new.onnx");
-        System.out.println("Load model thanh cong");
-        int size = inputStream.available();
-        byte [] buffer = new byte[size];
-        inputStream.read(buffer);
-        inputStream.close();
-        return buffer;
+        try (InputStream inputStream = context.getAssets().open("converted_model_final.onnx");
+             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+
+            // Đọc dữ liệu vào ByteArrayOutputStream
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                byteArrayOutputStream.write(buffer, 0, bytesRead);
+            }
+
+            // Trả về mảng byte đã đọc
+            System.out.println("Load model thanh cong");
+            return byteArrayOutputStream.toByteArray();
+        } catch (IOException e) {
+            System.err.println("Error reading model: " + e.getMessage());
+            throw e; // Có thể ném ngoại lệ hoặc xử lý theo cách khác
+        }
     }
+
 
     public void release() {
         try {
@@ -62,7 +84,6 @@ public class InstrumentClassifier {
 
     public int inference(String path){
         String outputTemp = path.substring(0, path.indexOf(".wav"))+"_temp.wav";
-//        String outputTemp = path;
         FFmpegKit.execute("-i "+path+" -ar 22050 -ac 1 "+outputTemp);
 
         Log.i("bacnv", "inference: "+path);
@@ -81,32 +102,30 @@ public class InstrumentClassifier {
         Log.i("bacnv", stringBuilder.toString());
 
         try {
-            OnnxTensor onnxTensor = OnnxTensor.createTensor(ortEnvironment, FloatBuffer.wrap(flattenData),new long[]{1,13,427,1});
+            OnnxTensor onnxTensor = OnnxTensor.createTensor(ortEnvironment, FloatBuffer.wrap(flattenData),new long[]{1,431,13,1});
             Map<String,OnnxTensor> inputModel = new HashMap<>();
             inputModel.put("input",onnxTensor);
 
             OrtSession.Result output = ortSession.run(inputModel);
             OnnxTensor outputOnnxTensor = (OnnxTensor) output.get(0);
+
             float[] outputArray = outputOnnxTensor.getFloatBuffer().array();
             Log.i("bacnv", "inference: "+outputArray.length);
 
+            for(int i=0;i<outputArray.length;i++){
+                System.out.println("outputArray["+i+"]: "+outputArray[i]);
+            }
+
             int maxScoreIndex = argmax(outputArray);
+
+
             Log.i("bacnv", "Result predict - index: "+maxScoreIndex);
             Log.i("bacnv", "Result predict: "+labels[maxScoreIndex]);
-//            new File(outputTemp).delete();
+            new File(outputTemp).delete();
             return maxScoreIndex;
         } catch (OrtException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public int inference2(String path){
-        System.out.println("xxxxxxx :"+path);
-        Python python = Python.getInstance();
-        PyObject pyObject = python.getModule("script");
-        PyObject result = pyObject.callAttr("main2",path);
-
-        return Integer.parseInt(result.toString());
     }
 
     private int argmax(float[] array) {

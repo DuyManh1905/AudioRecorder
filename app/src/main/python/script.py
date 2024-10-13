@@ -57,8 +57,7 @@ def main(file_path):
 
         mfcc = mfcc.T
 
-        mfcc_float = np.array(mfcc, dtype=np.float32)
-
-        if len(mfcc_float)==expected_vects_ps:
-            return mfcc_float.tolist()
+        if len(mfcc)==expected_vects_ps:
+            print('da trich xuat thannh cong mfcc')
+            return mfcc.tolist()
 

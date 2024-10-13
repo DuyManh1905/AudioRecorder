@@ -97,7 +97,7 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
 
         mAdapter = Adapter(records, this)
 
-        binding.recyclerview.apply {
+        binding.recyclerView.apply {
             adapter = mAdapter
             layoutManager = LinearLayoutManager(context)
         }
@@ -305,10 +305,10 @@ class GalleryActivity : AppCompatActivity(), OnItemClickListener {
     private fun checkNoItem() {
         if (records.isEmpty()) {
             binding.noItem.visibility = View.VISIBLE
-            binding.recyclerview.visibility = View.GONE
+            binding.recyclerView.visibility = View.GONE
         } else {
             binding.noItem.visibility = View.GONE
-            binding.recyclerview.visibility = View.VISIBLE
+            binding.recyclerView.visibility = View.VISIBLE
         }
     }
 

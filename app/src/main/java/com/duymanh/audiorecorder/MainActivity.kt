@@ -48,6 +48,8 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
 
     private lateinit var amplitudes: ArrayList<Float>
 
+    private var recordDuration: Long = 0 // Thời gian ghi âm tính bằng mili giây
+
     private var permissions = arrayOf(
         Manifest.permission.RECORD_AUDIO,
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -125,9 +127,19 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
 
 
         binding.btnDone.setOnClickListener{
+
+            if (recordDuration < 10000) { // kiểm tra nếu thời gian ghi âm nhỏ hơn 10 giây
+                Toast.makeText(this, "Vui lòng ghi âm ít nhất 10 giây!", Toast.LENGTH_SHORT).show()
+                stopRecorder()
+                return@setOnClickListener
+            }
+
             stopRecorder()
+
             binding.progressBar.visibility = View.VISIBLE
             binding.progressText.visibility = View.VISIBLE
+
+
 
             CoroutineScope(Dispatchers.Main).launch {
                 var categoryInd = classification()
@@ -170,7 +182,6 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
 
         binding.btnDelete.setOnClickListener{
             stopRecorder()
-            //            uuuuuuuuuuuu
             File("$dirPath$fileName.wav").delete()
             Toast.makeText(this,"Record delete",Toast.LENGTH_SHORT).show()
         }
@@ -181,9 +192,11 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
     private suspend fun classification(): Int {
         val modelClassifier = InstrumentClassifier(this)
         println("goi ham Ins thanh cong")
-        val classifiedCategoryId = intArrayOf(-1)
-        classifiedCategoryId[0] = modelClassifier.inference("$dirPath$fileName.wav")
-        return classifiedCategoryId[0].toInt()
+        var classifiedCategoryId = 0
+
+        classifiedCategoryId = modelClassifier.inference("$dirPath$fileName.wav")
+
+        return classifiedCategoryId
     }
 
     private fun save(){
@@ -288,6 +301,7 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
         isRecording = true
         isPaused = false
 
+        recordDuration = 0
         timer.start()
         binding.btnDelete.isClickable = true
         binding.btnDelete.setImageResource(R.drawable.ic_delete) // Use binding
@@ -299,6 +313,7 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
 
     private fun stopRecorder() {
         timer.stop()
+        recordDuration = 0
 
         recorder.apply {
             stop()
@@ -322,6 +337,7 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
         binding.tvTimer.text = duration // Use binding
         this.duration = duration.dropLast(3)
         binding.waveformView.addAmplitude(recorder.maxAmplitude.toFloat())
+        println(recordDuration)
+        recordDuration += 100
     }
-
 }
