@@ -23,13 +23,15 @@
     </com.google.android.material.appbar.MaterialToolbar>
 
     <com.duymanh.audiorecorder.PlayerWaveformView
+        android:background="@color/gray"
         android:id="@+id/playerView"
-        android:layout_width="656px"
+        android:layout_width="match_parent"
         android:layout_height="640px"
         app:layout_constraintBottom_toTopOf="@+id/seekBar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center_vertical"/>
 
     <SeekBar
         android:id="@+id/seekBar"

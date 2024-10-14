@@ -138,6 +138,20 @@ class AudioPlayerActivity : AppCompatActivity() {
         if(!mediaPlayer.isPlaying){
             mediaPlayer.start()
             btnPlay.background = ResourcesCompat.getDrawable(resources, R.drawable.ic_pause_circle,theme)
+
+            runnable = Runnable {
+                var progress = mediaPlayer.currentPosition
+                seekBar.progress = progress
+
+                // Cập nhật text cho Track Progress
+                tvTrackProgress.text = dateFormat(progress)
+
+                var amp = 80 + Math.random()*300
+                playerView.updateAmps(amp.toInt())
+
+                handler.postDelayed(runnable, 100)
+            }
+
             handler.postDelayed(runnable,delay)
         }
         else{

@@ -13,12 +13,15 @@ class PlayerWaveformView: View {
     private var w : Int = 18
     private var d : Int = 4
     private var sw : Int = 0
-    private var maxAmp : Int = 200
-    private var delta = 320
+    private var delta = 640
 
     private lateinit var rect: Rect
-    private var nbSpikes = 30
+    private var nbSpikes = 0
 
+    init {
+        sw = resources.displayMetrics.widthPixels.toFloat().toInt() //chieu rong cua thiet bi
+        nbSpikes = (sw/(w+d)).toInt()
+    }
     constructor(context: Context?) : super(context){
         init(null)
     }

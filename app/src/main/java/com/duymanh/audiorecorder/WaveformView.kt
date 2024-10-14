@@ -19,7 +19,7 @@ class WaveformView(context: Context?, attrs: AttributeSet?): View(context, attrs
     private var d = 6f // khoang cach giua cac thanh spikes
 
     private var sw = 0f //chieu rong cua tat ca cac thanh spike
-    private var sh = 200f // do cao toi da cua thanh spike
+    private var sh = 400f // do cao toi da cua thanh spike
 
     private var maxSpikes = 0 //so luong cac thanh spike max
 
@@ -31,7 +31,7 @@ class WaveformView(context: Context?, attrs: AttributeSet?): View(context, attrs
 
 
     fun addAmplitude(amp: Float) {
-        var norm: Float = Math.min(amp.toInt()/14, 200).toFloat()
+        var norm: Float = Math.min(amp.toInt()/14, 400).toFloat()
         amplitudes.add(norm)
 
         spikes.clear()
