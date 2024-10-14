@@ -19,6 +19,13 @@ def main(file_path):
     hop_length=512
     num_segments=1
 
+    # Lấy thông tin file
+    info = soundfile.info(file_path)
+
+    # Tính thời gian của file
+    duration = info.frames / info.samplerate
+    print(f"Duration of the file: {duration} seconds")
+
     # Data storage dictionary
     data = {
         "mapping": [],
@@ -49,6 +56,7 @@ def main(file_path):
                                     hop_length = hop_length)
 
         mfcc = mfcc.T
+
         if len(mfcc)==expected_vects_ps:
             print('da trich xuat thannh cong mfcc')
             return mfcc.tolist()

@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.AssetManager
 import android.media.MediaRecorder
 import android.os.Bundle
 import android.os.Handler
@@ -30,9 +31,11 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
 import java.io.ObjectOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Random
 
 const val REQUEST_CODE = 200
 
@@ -122,25 +125,18 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
 
 
         binding.btnDone.setOnClickListener{
-
             if (recordDuration < 10000) { // kiểm tra nếu thời gian ghi âm nhỏ hơn 10 giây
                 Toast.makeText(this, "Vui lòng ghi âm ít nhất 10 giây!", Toast.LENGTH_SHORT).show()
                 stopRecorder()
                 return@setOnClickListener
             }
-
             stopRecorder()
-
             binding.progressBar.visibility = View.VISIBLE
             binding.progressText.visibility = View.VISIBLE
 
-
-
             CoroutineScope(Dispatchers.Main).launch {
                 var categoryInd = classification()
-                if (categoryInd >= 0) {
-                    binding2.categorySpinner.setSelection(categoryInd)  // Thiết lập giá trị mặc định
-                }
+                binding2.categorySpinner.setSelection(categoryInd)  // Thiết lập giá trị mặc định
 
                 binding.progressBar.visibility = View.GONE
                 binding.progressText.visibility = View.GONE
@@ -186,14 +182,20 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
     private suspend fun classification(): Int {
         val modelClassifier = InstrumentClassifier(this)
         var classifiedCategoryId = 0
-        classifiedCategoryId = modelClassifier.inference("$dirPath$fileName.wav")
+//        val stringArray = arrayOf("dan_bau1117.wav", "dan_tranh_1014.wav", "guitar_1099.wav", "piano_1094.wav")
+//        var ind = Random().nextInt(4)
+//
+//        val tempFile = createTempFileFromAssets(stringArray[ind])
+//        println("xxxxxxxxx" + stringArray[ind])
+        val tempFile = "$dirPath$fileName.wav"
+
+        classifiedCategoryId = modelClassifier.inference(tempFile)
         return classifiedCategoryId
     }
 
     private fun save(){
         val newFilename = binding2.filenameInput.text.toString()
         if(newFilename!=fileName){
-            //            uuuuuuuuuuuu
             var newFile = File("$dirPath$newFilename.wav")
             File("$dirPath$fileName.wav").renameTo(newFile)
         }
@@ -330,5 +332,17 @@ class MainActivity : AppCompatActivity(), Timer.OnTimerTickListener {
         binding.waveformView.addAmplitude(recorder.maxAmplitude.toFloat())
         println(recordDuration)
         recordDuration += 100
+    }
+
+    private fun createTempFileFromAssets(fileName: String): String {
+        val assetManager = assets
+        val inputStream = assetManager.open(fileName)
+
+        // Tạo tệp tạm thời trong thư mục cache
+        val tempFile = File(cacheDir, fileName)
+        tempFile.outputStream().use { outputStream ->
+            inputStream.copyTo(outputStream)
+        }
+        return tempFile.absolutePath
     }
 }

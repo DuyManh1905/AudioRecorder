@@ -111,6 +111,7 @@ public class InstrumentClassifier {
 
             Log.i("bacnv", "Result predict - index: "+maxScoreIndex);
             Log.i("bacnv", "Result predict: "+labels[maxScoreIndex]);
+
             new File(outputTemp).delete();
             return maxScoreIndex;
         } catch (OrtException e) {
@@ -120,7 +121,7 @@ public class InstrumentClassifier {
 
     private int argmax(float[] array) {
         int maxIdx = 0;
-        double maxVal = -MAX_VALUE;
+        float maxVal = -1;
         for (int j = 0; j < array.length; j++) {
             if (array[j] > maxVal) {
                 maxVal = array[j];
